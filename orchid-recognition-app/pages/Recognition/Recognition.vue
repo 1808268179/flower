@@ -110,6 +110,137 @@
     </view>
 </template>
 
+// export default {
+//     data() {
+//         return {
+//             imageSrc: '', 
+//             isLoading: false,
+//             isUploading: false,
+//             result: {
+//                 name: '',
+//                 latin: '',
+//                 confidence: 0,
+//                 features: []
+//             }
+//         };
+//     },
+//     methods: {
+//         chooseImage() {
+//             this.isUploading = true;
+//             uni.chooseImage({
+//                 count: 1,
+//                 sizeType: ['compressed'],
+//                 sourceType: ['album', 'camera'],
+//                 success: (res) => {
+//                     setTimeout(() => {
+//                         this.imageSrc = res.tempFilePaths[0];
+//                         this.result = { name: '', latin: '', confidence: 0, features: [] };
+//                         this.isUploading = false;
+//                         uni.showToast({
+//                             title: '图片上传成功',
+//                             icon: 'success',
+//                             duration: 1500
+//                         });
+//                     }, 800);
+//                 },
+//                 fail: () => {
+//                     this.isUploading = false;
+//                     uni.showToast({
+//                         title: '图片选择失败',
+//                         icon: 'error'
+//                     });
+//                 }
+//             });
+//         },
+        
+//         startRecognition() {
+//             if (!this.imageSrc) {
+//                 uni.showToast({ 
+//                     title: '请先选择一张图片', 
+//                     icon: 'none',
+//                     duration: 2000
+//                 });
+//                 return;
+//             }
+
+//             this.isLoading = true;
+//             uni.showLoading({ title: 'AI正在努力识别中...' });
+
+//             // 模拟API调用，增强结果数据
+//             setTimeout(() => {
+//                 const mockResults = [
+//                     {
+//                         name: '春兰',
+//                         latin: 'Cymbidium goeringii',
+//                         confidence: 0.936,
+//                         features: ['花香清雅', '叶片细长', '花期较早', '单花开放']
+//                     },
+//                     {
+//                         name: '墨兰',
+//                         latin: 'Cymbidium sinense',
+//                         confidence: 0.892,
+//                         features: ['花色深紫', '叶宽厚实', '花期冬季', '花序较长']
+//                     },
+//                     {
+//                         name: '蝴蝶兰',
+//                         latin: 'Phalaenopsis',
+//                         confidence: 0.876,
+//                         features: ['花型似蝶', '色彩丰富', '花期较长', '叶片肉质']
+//                     }
+//                 ];
+                
+//                 const randomResult = mockResults[Math.floor(Math.random() * mockResults.length)];
+//                 this.result = randomResult;
+//                 this.isLoading = false;
+//                 uni.hideLoading();
+                
+//                 // 成功提示
+//                 uni.showToast({
+//                     title: '识别完成！',
+//                     icon: 'success',
+//                     duration: 2000
+//                 });
+//             }, 2500);
+//         },
+        
+//         clearResult() {
+//             this.result = { name: '', latin: '', confidence: 0, features: [] };
+//             uni.showToast({
+//                 title: '结果已清除',
+//                 icon: 'none',
+//                 duration: 1500
+//             });
+//         },
+        
+//         logout() {
+//             uni.showModal({
+//                 title: '确认退出',
+//                 content: '确定要退出当前账户吗？',
+//                 success: (res) => {
+//                     if (res.confirm) {
+//                         uni.reLaunch({
+//                             url: '/pages/Login'
+//                         });
+//                     }
+//                 }
+//             });
+//         },
+        
+//         getConfidenceLevel(confidence) {
+//             if (confidence >= 0.9) return 'high';
+//             if (confidence >= 0.7) return 'medium';
+//             return 'low';
+//         },
+        
+//         getConfidenceText(confidence) {
+//             if (confidence >= 0.9) return '高可信度';
+//             if (confidence >= 0.7) return '中等可信度';
+//             return '低可信度';
+//         }
+//     }
+// };
+
+
 <script>
 export default {
     data() {
@@ -167,41 +298,45 @@ export default {
             this.isLoading = true;
             uni.showLoading({ title: 'AI正在努力识别中...' });
 
-            // 模拟API调用，增强结果数据
-            setTimeout(() => {
-                const mockResults = [
-                    {
-                        name: '春兰',
-                        latin: 'Cymbidium goeringii',
-                        confidence: 0.936,
-                        features: ['花香清雅', '叶片细长', '花期较早', '单花开放']
-                    },
-                    {
-                        name: '墨兰',
-                        latin: 'Cymbidium sinense',
-                        confidence: 0.892,
-                        features: ['花色深紫', '叶宽厚实', '花期冬季', '花序较长']
-                    },
-                    {
-                        name: '蝴蝶兰',
-                        latin: 'Phalaenopsis',
-                        confidence: 0.876,
-                        features: ['花型似蝶', '色彩丰富', '花期较长', '叶片肉质']
+            // 调用 Flask API 进行识别
+            uni.uploadFile({
+                url: 'http://61.136.101.57:5000/predict', // 替换为你的 Flask API 地址
+                filePath: this.imageSrc,
+                name: 'file',
+                success: (res) => {
+                    const data = JSON.parse(res.data);
+                    if (data.message === '成功') {
+                        // 取置信度最高的结果
+                        const topResult = data.top5_info[0];
+                        this.result = {
+                            name: topResult.name,
+                            latin: '', // 若 API 未返回拉丁名，可留空
+                            confidence: topResult.confidence,
+                            features: [] // 若 API 未返回特征，可留空
+                        };
+                        uni.showToast({
+                            title: '识别完成！',
+                            icon: 'success',
+                            duration: 2000
+                        });
+                    } else {
+                        uni.showToast({
+                            title: '识别失败：' + data.error,
+                            icon: 'error'
+                        });
                     }
-                ];
-                
-                const randomResult = mockResults[Math.floor(Math.random() * mockResults.length)];
-                this.result = randomResult;
-                this.isLoading = false;
-                uni.hideLoading();
-                
-                // 成功提示
-                uni.showToast({
-                    title: '识别完成！',
-                    icon: 'success',
-                    duration: 2000
-                });
-            }, 2500);
+                },
+                fail: (err) => {
+                    uni.showToast({
+                        title: '请求失败：' + err.errMsg,
+                        icon: 'error'
+                    });
+                },
+                complete: () => {
+                    this.isLoading = false;
+                    uni.hideLoading();
+                }
+            });
         },
         
         clearResult() {
@@ -220,7 +355,7 @@ export default {
                 success: (res) => {
                     if (res.confirm) {
                         uni.reLaunch({
-                            url: '/pages/Login'
+                            url: '/pages/Login/Login'
                         });
                     }
                 }
