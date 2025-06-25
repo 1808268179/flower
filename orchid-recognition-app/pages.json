@@ -3,20 +3,23 @@
 		{
 			"path": "pages/Login/Login",
 			"style": {
-				"navigationBarTitleText": "登录"
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/Recognition/Recognition",
 			"style": {
-				"navigationBarTitleText": "兰花识别"
+				"navigationBarTitleText": "兰花识别",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path" : "pages/Home/Home",
 			"style" : 
 			{
-				"navigationBarTitleText" : ""
+				"navigationBarTitleText" : "",
+				"navigationStyle": "custom"
 			}
 		}
 	],
@@ -25,5 +28,25 @@
 		"navigationBarTitleText": "兰花识别专家",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
-	}
+	},
+	"tabBar": {
+			"color": "#8a8a8a",
+			"selectedColor": "#764ba2",
+			"backgroundColor": "#ffffff",
+			"borderStyle": "black",
+			"list": [
+				{
+					"pagePath": "pages/Home/Home",
+					"text": "首页",
+					"iconPath": "/static/tab-icons/home.svg",
+					"selectedIconPath": "/static/tab-icons/home_select.svg"
+				},
+				{
+					"pagePath": "pages/Recognition/Recognition",
+					"text": "AI识别",
+					"iconPath": "/static/tab-icons/recognition.svg",
+					"selectedIconPath": "/static/tab-icons/recognition_select.svg"
+				}
+			]
+		}
 }

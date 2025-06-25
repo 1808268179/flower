@@ -72,7 +72,7 @@
                     this.isLoading = false;
                     uni.hideLoading();
                     uni.reLaunch({
-                        url: '/pages/Recognition/Recognition'
+                        url: '/pages/Home/Home'
                     });
                 }, 1500);
             }
