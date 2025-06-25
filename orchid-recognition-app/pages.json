@@ -11,6 +11,13 @@
 			"style": {
 				"navigationBarTitleText": "兰花识别"
 			}
+		},
+		{
+			"path" : "pages/Home/Home",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
 		}
 	],
 	"globalStyle": {
